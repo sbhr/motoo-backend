@@ -1,4 +1,4 @@
-package db
+package motoodb
 
 import (
 	"github.com/jinzhu/gorm"
@@ -9,6 +9,7 @@ import (
 // MotooDB has methods to get data of motoodb
 type MotooDB interface {
 	GetAllConversations() []model.Conversation
+	GetConversation(id int) model.Conversation
 }
 
 type motoo struct {
@@ -16,15 +17,11 @@ type motoo struct {
 }
 
 // New retrun insatnce has MotooDB interface
-func New(user, password, host, dbName string) (MotooDB, error) {
-	db, err := gorm.Open("mysql", user+":"+password+"@tcp("+host+")/"+dbName+"?charset=utf8&parseTime=True&loc=Local")
+func New(db *gorm.DB) MotooDB {
 	m := &motoo{
 		db: db,
 	}
-	if err != nil {
-		return nil, err
-	}
-	return m, nil
+	return m
 }
 
 // GetAllConversations retrun all data from conversation table
@@ -33,3 +30,17 @@ func (m *motoo) GetAllConversations() []model.Conversation {
 	m.db.Find(&cs)
 	return cs
 }
+
+// GetConversation retrun data from conversation table
+func (m *motoo) GetConversation(id int) model.Conversation {
+	c := model.Conversation{}
+	m.db.First(&c, id)
+	return c
+}
+
+// GetResponseByKeyword
+// PostConversation
+// DeleteConversation
+// UpdateConversation
+// PostUser
+// PostPlaylog
