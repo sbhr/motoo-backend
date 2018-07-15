@@ -10,6 +10,7 @@ import (
 type MotooDB interface {
 	GetAllConversations() []model.Conversation
 	GetConversation(id int) model.Conversation
+	GetConversationIncludeKeyword(keyword string) []model.Conversation
 }
 
 type motoo struct {
@@ -38,7 +39,13 @@ func (m *motoo) GetConversation(id int) model.Conversation {
 	return c
 }
 
-// GetResponseByKeyword
+// GetConversationIncludeKeyword
+func (m *motoo) GetConversationIncludeKeyword(keyword string) []model.Conversation {
+	cs := []model.Conversation{}
+	m.db.Where("keyword LIKE ?", "%"+keyword+"%").Find(&cs)
+	return cs
+}
+
 // PostConversation
 // DeleteConversation
 // UpdateConversation
