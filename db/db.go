@@ -11,6 +11,7 @@ type MotooDB interface {
 	GetAllConversations() []model.Conversation
 	GetConversation(id int) model.Conversation
 	GetConversationIncludeKeyword(keyword string) []model.Conversation
+	PostConversation(keyword, response string) error
 }
 
 type motoo struct {
@@ -47,6 +48,16 @@ func (m *motoo) GetConversationIncludeKeyword(keyword string) []model.Conversati
 }
 
 // PostConversation
+func (m *motoo) PostConversation(keyword, response string) error {
+	c := model.Conversation{
+		ID:       0,
+		Keyword:  keyword,
+		Response: response,
+	}
+	err := m.db.Create(&c)
+	return err.Error
+}
+
 // DeleteConversation
 // UpdateConversation
 // PostUser
