@@ -8,9 +8,9 @@ import (
 
 // MotooDB has methods to get data of motoodb
 type MotooDB interface {
-	GetAllConversations() []model.Conversation
-	GetConversation(id int) model.Conversation
-	GetConversationIncludeKeyword(keyword string) []model.Conversation
+	GetAllConversations() ([]model.Conversation, error)
+	GetConversation(id int) (model.Conversation, error)
+	GetConversationIncludeKeyword(keyword string) ([]model.Conversation, error)
 	PostConversation(keyword, response string) error
 }
 
@@ -27,24 +27,24 @@ func New(db *gorm.DB) MotooDB {
 }
 
 // GetAllConversations retrun all data from conversation table
-func (m *motoo) GetAllConversations() []model.Conversation {
+func (m *motoo) GetAllConversations() ([]model.Conversation, error) {
 	cs := []model.Conversation{}
-	m.db.Find(&cs)
-	return cs
+	result := m.db.Find(&cs)
+	return cs, result.Error
 }
 
 // GetConversation retrun data from conversation table
-func (m *motoo) GetConversation(id int) model.Conversation {
+func (m *motoo) GetConversation(id int) (model.Conversation, error) {
 	c := model.Conversation{}
-	m.db.First(&c, id)
-	return c
+	result := m.db.First(&c, id)
+	return c, result.Error
 }
 
 // GetConversationIncludeKeyword
-func (m *motoo) GetConversationIncludeKeyword(keyword string) []model.Conversation {
+func (m *motoo) GetConversationIncludeKeyword(keyword string) ([]model.Conversation, error) {
 	cs := []model.Conversation{}
-	m.db.Where("keyword LIKE ?", "%"+keyword+"%").Find(&cs)
-	return cs
+	result := m.db.Where("keyword LIKE ?", "%"+keyword+"%").Find(&cs)
+	return cs, result.Error
 }
 
 // PostConversation
@@ -54,8 +54,8 @@ func (m *motoo) PostConversation(keyword, response string) error {
 		Keyword:  keyword,
 		Response: response,
 	}
-	err := m.db.Create(&c)
-	return err.Error
+	result := m.db.Create(&c)
+	return result.Error
 }
 
 // DeleteConversation
