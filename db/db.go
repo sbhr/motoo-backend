@@ -12,6 +12,7 @@ type MotooDB interface {
 	GetConversation(id int) (model.Conversation, error)
 	GetConversationIncludeKeyword(keyword string) ([]model.Conversation, error)
 	PostConversation(keyword, response string) error
+	DeleteConversation(id int) error
 }
 
 type motoo struct {
@@ -59,6 +60,14 @@ func (m *motoo) PostConversation(keyword, response string) error {
 }
 
 // DeleteConversation
+func (m *motoo) DeleteConversation(id int) error {
+	c := model.Conversation{
+		ID: id,
+	}
+	result := m.db.Delete(&c)
+	return result.Error
+}
+
 // UpdateConversation
 // PostUser
 // PostPlaylog
