@@ -12,14 +12,14 @@ type Route struct {
 	methods []string
 }
 
-var (
-	routes = []Route{
+func NewRoutes(h handler.Handler) []Route {
+	return []Route{
 		{
-			handler: handler.Get,
+			handler: h.GetAll,
 			path:    "/",
 			methods: []string{
 				http.MethodGet,
 			},
 		},
 	}
-)
+}
