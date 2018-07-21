@@ -18,6 +18,7 @@ type Handler interface {
 	GetAllConversations(w http.ResponseWriter, r *http.Request)
 	GetConversation(w http.ResponseWriter, r *http.Request)
 	PostConversation(w http.ResponseWriter, r *http.Request)
+	UpdateConversation(w http.ResponseWriter, r *http.Request)
 	DeleteConversation(w http.ResponseWriter, r *http.Request)
 }
 
@@ -83,6 +84,36 @@ func (h handler) PostConversation(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(code), code)
 		return
 	}
+	w.WriteHeader(http.StatusAccepted)
+	return
+}
+
+func (h handler) UpdateConversation(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		code := http.StatusBadRequest
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+
+	var c model.Conversation
+	err = json.NewDecoder(r.Body).Decode(&c)
+	// Drain and close the body to let the Transport reuse the connection
+	io.Copy(ioutil.Discard, r.Body)
+	r.Body.Close()
+	if err != nil {
+		code := http.StatusBadRequest
+		http.Error(w, err.Error(), code)
+		return
+	}
+
+	err = h.db.UpdateConversation(id, c)
+	if err != nil {
+		code := http.StatusInternalServerError
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+
 	w.WriteHeader(http.StatusAccepted)
 	return
 }
