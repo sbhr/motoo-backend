@@ -18,6 +18,7 @@ type Handler interface {
 	GetAllConversations(w http.ResponseWriter, r *http.Request)
 	GetConversation(w http.ResponseWriter, r *http.Request)
 	PostConversation(w http.ResponseWriter, r *http.Request)
+	DeleteConversation(w http.ResponseWriter, r *http.Request)
 }
 
 type handler struct {
@@ -77,6 +78,24 @@ func (h handler) PostConversation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.db.PostConversation(c)
+	if err != nil {
+		code := http.StatusInternalServerError
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
+	return
+}
+
+func (h handler) DeleteConversation(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		code := http.StatusBadRequest
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+
+	err = h.db.DeleteConversation(id)
 	if err != nil {
 		code := http.StatusInternalServerError
 		http.Error(w, http.StatusText(code), code)

@@ -35,5 +35,12 @@ func NewRoutes(h handler.Handler) []Route {
 				http.MethodPost,
 			},
 		},
+		{
+			handler: h.DeleteConversation,
+			path:    "/convo/{id}",
+			methods: []string{
+				http.MethodDelete,
+			},
+		},
 	}
 }
