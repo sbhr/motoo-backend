@@ -28,5 +28,12 @@ func NewRoutes(h handler.Handler) []Route {
 				http.MethodGet,
 			},
 		},
+		{
+			handler: h.PostConversation,
+			path:    "/convo/",
+			methods: []string{
+				http.MethodPost,
+			},
+		},
 	}
 }

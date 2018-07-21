@@ -11,7 +11,7 @@ type MotooDB interface {
 	GetAllConversations() ([]model.Conversation, error)
 	GetConversation(id int) (model.Conversation, error)
 	GetConversationIncludeKeyword(keyword string) ([]model.Conversation, error)
-	PostConversation(keyword, response string) error
+	PostConversation(convo model.Conversation) error
 	DeleteConversation(id int) error
 	UpdateConversation(id int, keyword, response string) error
 	PostUser(userID, name string) error
@@ -53,16 +53,11 @@ func (m *motoo) GetConversationIncludeKeyword(keyword string) ([]model.Conversat
 
 /*
 PostConversation
-
-	aaaa
 */
-func (m *motoo) PostConversation(keyword, response string) error {
-	c := model.Conversation{
-		ID:       0,
-		Keyword:  keyword,
-		Response: response,
-	}
-	result := m.db.Create(&c)
+func (m *motoo) PostConversation(convo model.Conversation) error {
+	// New Record
+	convo.ID = 0
+	result := m.db.Create(&convo)
 	return result.Error
 }
 
