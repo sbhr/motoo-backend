@@ -9,8 +9,8 @@ import (
 // MotooDB has methods for CRUD
 type MotooDB interface {
 	GetAllConversations() ([]model.Conversation, error)
-	GetConversation(id int) (model.Conversation, error)
-	GetConversationIncludeKeyword(keyword string) ([]model.Conversation, error)
+	GetConversationByID(id int) (model.Conversation, error)
+	GetConversationByKeyword(keyword string) ([]model.Conversation, error)
 	PostConversation(convo model.Conversation) error
 	DeleteConversation(id int) error
 	UpdateConversation(id int, convo model.Conversation) error
@@ -38,14 +38,14 @@ func (m *motoo) GetAllConversations() ([]model.Conversation, error) {
 }
 
 // GetConversation return data from conversation table
-func (m *motoo) GetConversation(id int) (model.Conversation, error) {
+func (m *motoo) GetConversationByID(id int) (model.Conversation, error) {
 	c := model.Conversation{}
 	result := m.db.First(&c, id)
 	return c, result.Error
 }
 
-// GetConversationIncludeKeyword
-func (m *motoo) GetConversationIncludeKeyword(keyword string) ([]model.Conversation, error) {
+// GetConversationByKeyword
+func (m *motoo) GetConversationByKeyword(keyword string) ([]model.Conversation, error) {
 	cs := []model.Conversation{}
 	result := m.db.Where("keyword LIKE ?", "%"+keyword+"%").Find(&cs)
 	return cs, result.Error
