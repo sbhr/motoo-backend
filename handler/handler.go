@@ -15,8 +15,8 @@ import (
 
 // Handler has functions to operate database
 type Handler interface {
-	GetAllConversations(w http.ResponseWriter, r *http.Request)
-	GetConversation(w http.ResponseWriter, r *http.Request)
+	GetConversations(w http.ResponseWriter, r *http.Request)
+	GetConversationByID(w http.ResponseWriter, r *http.Request)
 	PostConversation(w http.ResponseWriter, r *http.Request)
 	UpdateConversation(w http.ResponseWriter, r *http.Request)
 	DeleteConversation(w http.ResponseWriter, r *http.Request)
@@ -33,8 +33,15 @@ func New(m motoodb.MotooDB) Handler {
 	}
 }
 
-func (h handler) GetAllConversations(w http.ResponseWriter, r *http.Request) {
-	cs, err := h.db.GetAllConversations()
+func (h handler) GetConversations(w http.ResponseWriter, r *http.Request) {
+	k := r.URL.Query().Get("q")
+	var cs []model.Conversation
+	var err error
+	if k == "" {
+		cs, err = h.db.GetAllConversations()
+	} else {
+		cs, err = h.db.GetConversationByKeyword(k)
+	}
 	if err != nil {
 		code := http.StatusInternalServerError
 		http.Error(w, http.StatusText(code), code)
@@ -46,7 +53,7 @@ func (h handler) GetAllConversations(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (h handler) GetConversation(w http.ResponseWriter, r *http.Request) {
+func (h handler) GetConversationByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		code := http.StatusBadRequest
@@ -54,7 +61,7 @@ func (h handler) GetConversation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.db.GetConversation(id)
+	c, err := h.db.GetConversationByID(id)
 	if err != nil {
 		code := http.StatusInternalServerError
 		http.Error(w, http.StatusText(code), code)

@@ -15,14 +15,14 @@ type Route struct {
 func NewRoutes(h handler.Handler) []Route {
 	return []Route{
 		{
-			handler: h.GetAllConversations,
+			handler: h.GetConversations,
 			path:    "/convo/",
 			methods: []string{
 				http.MethodGet,
 			},
 		},
 		{
-			handler: h.GetConversation,
+			handler: h.GetConversationByID,
 			path:    "/convo/{id}",
 			methods: []string{
 				http.MethodGet,
