@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/jinzhu/gorm"
 	"github.com/sbhr/motoo-backend/db"
+	"github.com/sbhr/motoo-backend/handler"
+	"github.com/sbhr/motoo-backend/router"
 )
 
 func main() {
@@ -22,17 +25,13 @@ func main() {
 	}
 	defer db.Close()
 
-	motooDB := motoodb.New(db)
+	m := motoodb.New(db)
 	if err != nil {
 		fmt.Println("Failed to create db instance: ", err.Error())
 		panic(err.Error())
 	}
 
-	cs := motooDB.GetAllConversations()
-	fmt.Println(cs)
+	h := handler.New(m)
 
-	fmt.Println("============")
-
-	c := motooDB.GetConversation(3)
-	fmt.Println(c)
+	http.ListenAndServe(":8080", router.New(h))
 }

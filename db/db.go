@@ -9,13 +9,13 @@ import (
 // MotooDB has methods for CRUD
 type MotooDB interface {
 	GetAllConversations() ([]model.Conversation, error)
-	GetConversation(id int) (model.Conversation, error)
-	GetConversationIncludeKeyword(keyword string) ([]model.Conversation, error)
-	PostConversation(keyword, response string) error
+	GetConversationByID(id int) (model.Conversation, error)
+	GetConversationByKeyword(keyword string) ([]model.Conversation, error)
+	PostConversation(convo model.Conversation) error
 	DeleteConversation(id int) error
-	UpdateConversation(id int, keyword, response string) error
-	PostUser(userID, name string) error
-	PostPlaylog(userID, gameName string, startTime, endTime, playTime int) error
+	UpdateConversation(id int, convo model.Conversation) error
+	PostUser(user model.User) error
+	PostPlaylog(playlog model.Playlog) error
 }
 
 type motoo struct {
@@ -38,14 +38,14 @@ func (m *motoo) GetAllConversations() ([]model.Conversation, error) {
 }
 
 // GetConversation return data from conversation table
-func (m *motoo) GetConversation(id int) (model.Conversation, error) {
+func (m *motoo) GetConversationByID(id int) (model.Conversation, error) {
 	c := model.Conversation{}
 	result := m.db.First(&c, id)
 	return c, result.Error
 }
 
-// GetConversationIncludeKeyword
-func (m *motoo) GetConversationIncludeKeyword(keyword string) ([]model.Conversation, error) {
+// GetConversationByKeyword
+func (m *motoo) GetConversationByKeyword(keyword string) ([]model.Conversation, error) {
 	cs := []model.Conversation{}
 	result := m.db.Where("keyword LIKE ?", "%"+keyword+"%").Find(&cs)
 	return cs, result.Error
@@ -53,16 +53,11 @@ func (m *motoo) GetConversationIncludeKeyword(keyword string) ([]model.Conversat
 
 /*
 PostConversation
-
-	aaaa
 */
-func (m *motoo) PostConversation(keyword, response string) error {
-	c := model.Conversation{
-		ID:       0,
-		Keyword:  keyword,
-		Response: response,
-	}
-	result := m.db.Create(&c)
+func (m *motoo) PostConversation(convo model.Conversation) error {
+	// New Record
+	convo.ID = 0
+	result := m.db.Create(&convo)
 	return result.Error
 }
 
@@ -76,35 +71,26 @@ func (m *motoo) DeleteConversation(id int) error {
 }
 
 // UpdateConversation
-func (m *motoo) UpdateConversation(id int, keyword, response string) error {
+func (m *motoo) UpdateConversation(id int, convo model.Conversation) error {
 	c := model.Conversation{
 		ID: id,
 	}
-	result := m.db.Model(&c).Updates(model.Conversation{Keyword: keyword, Response: response})
+	result := m.db.Model(&c).Updates(convo)
 	return result.Error
 }
 
 // PostUser
-func (m *motoo) PostUser(userID, name string) error {
-	u := model.User{
-		ID:     0,
-		UserID: userID,
-		Name:   name,
-	}
-	result := m.db.Create(&u)
+func (m *motoo) PostUser(user model.User) error {
+	// New Record
+	user.ID = 0
+	result := m.db.Create(&user)
 	return result.Error
 }
 
 // PostPlaylog
-func (m *motoo) PostPlaylog(userID, gameName string, startTime, endTime, playTime int) error {
-	p := model.Playlog{
-		ID:        0,
-		UserID:    userID,
-		GameName:  gameName,
-		StartTime: startTime,
-		EndTime:   endTime,
-		PlayTime:  playTime,
-	}
-	result := m.db.Create(&p)
+func (m *motoo) PostPlaylog(playlog model.Playlog) error {
+	// New Record
+	playlog.ID = 0
+	result := m.db.Create(&playlog)
 	return result.Error
 }
