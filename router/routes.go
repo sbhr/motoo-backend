@@ -49,5 +49,19 @@ func NewRoutes(h handler.Handler) []Route {
 				http.MethodDelete,
 			},
 		},
+		{
+			handler: h.PostUser,
+			path:    "/user/",
+			methods: []string{
+				http.MethodPost,
+			},
+		},
+		{
+			handler: h.PostPlaylog,
+			path:    "/playlog/",
+			methods: []string{
+				http.MethodPost,
+			},
+		},
 	}
 }

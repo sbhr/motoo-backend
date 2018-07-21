@@ -20,6 +20,8 @@ type Handler interface {
 	PostConversation(w http.ResponseWriter, r *http.Request)
 	UpdateConversation(w http.ResponseWriter, r *http.Request)
 	DeleteConversation(w http.ResponseWriter, r *http.Request)
+	PostUser(w http.ResponseWriter, r *http.Request)
+	PostPlaylog(w http.ResponseWriter, r *http.Request)
 }
 
 type handler struct {
@@ -134,6 +136,50 @@ func (h handler) DeleteConversation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.db.DeleteConversation(id)
+	if err != nil {
+		code := http.StatusInternalServerError
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
+	return
+}
+
+func (h handler) PostUser(w http.ResponseWriter, r *http.Request) {
+	var u model.User
+	err := json.NewDecoder(r.Body).Decode(&u)
+	// Drain and close the body to let the Transport reuse the connection
+	io.Copy(ioutil.Discard, r.Body)
+	r.Body.Close()
+	if err != nil {
+		code := http.StatusBadRequest
+		http.Error(w, err.Error(), code)
+		return
+	}
+
+	err = h.db.PostUser(u)
+	if err != nil {
+		code := http.StatusInternalServerError
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
+	return
+}
+
+func (h handler) PostPlaylog(w http.ResponseWriter, r *http.Request) {
+	var p model.Playlog
+	err := json.NewDecoder(r.Body).Decode(&p)
+	// Drain and close the body to let the Transport reuse the connection
+	io.Copy(ioutil.Discard, r.Body)
+	r.Body.Close()
+	if err != nil {
+		code := http.StatusBadRequest
+		http.Error(w, err.Error(), code)
+		return
+	}
+
+	err = h.db.PostPlaylog(p)
 	if err != nil {
 		code := http.StatusInternalServerError
 		http.Error(w, http.StatusText(code), code)
