@@ -14,8 +14,8 @@ type MotooDB interface {
 	PostConversation(convo model.Conversation) error
 	DeleteConversation(id int) error
 	UpdateConversation(id int, convo model.Conversation) error
-	PostUser(userID, name string) error
-	PostPlaylog(userID, gameName string, startTime, endTime, playTime int) error
+	PostUser(user model.User) error
+	PostPlaylog(playlog model.Playlog) error
 }
 
 type motoo struct {
@@ -80,26 +80,17 @@ func (m *motoo) UpdateConversation(id int, convo model.Conversation) error {
 }
 
 // PostUser
-func (m *motoo) PostUser(userID, name string) error {
-	u := model.User{
-		ID:     0,
-		UserID: userID,
-		Name:   name,
-	}
-	result := m.db.Create(&u)
+func (m *motoo) PostUser(user model.User) error {
+	// New Record
+	user.ID = 0
+	result := m.db.Create(&user)
 	return result.Error
 }
 
 // PostPlaylog
-func (m *motoo) PostPlaylog(userID, gameName string, startTime, endTime, playTime int) error {
-	p := model.Playlog{
-		ID:        0,
-		UserID:    userID,
-		GameName:  gameName,
-		StartTime: startTime,
-		EndTime:   endTime,
-		PlayTime:  playTime,
-	}
-	result := m.db.Create(&p)
+func (m *motoo) PostPlaylog(playlog model.Playlog) error {
+	// New Record
+	playlog.ID = 0
+	result := m.db.Create(&playlog)
 	return result.Error
 }
