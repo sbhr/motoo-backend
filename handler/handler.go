@@ -3,13 +3,17 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 
 	"github.com/sbhr/motoo-backend/db"
 )
 
 // Handler has functions to operate database
 type Handler interface {
-	GetAll(w http.ResponseWriter, r *http.Request)
+	GetAllConversations(w http.ResponseWriter, r *http.Request)
+	GetConversation(w http.ResponseWriter, r *http.Request)
 }
 
 type handler struct {
@@ -23,14 +27,35 @@ func New(m motoodb.MotooDB) Handler {
 	}
 }
 
-func (h handler) GetAll(w http.ResponseWriter, r *http.Request) {
+func (h handler) GetAllConversations(w http.ResponseWriter, r *http.Request) {
 	cs, err := h.db.GetAllConversations()
 	if err != nil {
 		code := http.StatusInternalServerError
-		http.Error(w, err.Error(), code)
+		http.Error(w, http.StatusText(code), code)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(cs)
+	return
+}
+
+func (h handler) GetConversation(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		code := http.StatusBadRequest
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+
+	c, err := h.db.GetConversation(id)
+	if err != nil {
+		code := http.StatusInternalServerError
+		http.Error(w, http.StatusText(code), code)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(c)
 	return
 }
