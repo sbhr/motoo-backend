@@ -13,3 +13,6 @@
 
 # dep
 vendor/
+
+# gae
+app.yaml
