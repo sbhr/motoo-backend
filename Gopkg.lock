@@ -8,6 +8,12 @@
   version = "v1.4.0"
 
 [[projects]]
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/gorilla/context"
   packages = ["."]
   revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
@@ -35,14 +41,31 @@
   revision = "04140366298a54a039076d798123ffa108fff46c"
 
 [[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["context"]
+  revision = "a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1"
+
+[[projects]]
   name = "google.golang.org/appengine"
-  packages = ["cloudsql"]
+  packages = [
+    ".",
+    "cloudsql",
+    "internal",
+    "internal/app_identity",
+    "internal/base",
+    "internal/datastore",
+    "internal/log",
+    "internal/modules",
+    "internal/remote_api",
+    "log"
+  ]
   revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
   version = "v1.1.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "43489f5a048ffe1da1e13d4c269fe5252ad10ebe21b1903b8cfd6745466e1ff0"
+  inputs-digest = "df045b6d5e84936e0fe0ba38f3a8af5f33dc65473960e3979a33f7ab6c8f0e8b"
   solver-name = "gps-cdcl"
   solver-version = 1
