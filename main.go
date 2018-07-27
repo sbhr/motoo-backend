@@ -41,6 +41,8 @@ func main() {
 	h := handler.New(m)
 
 	http.Handle("/", router.New(h))
+	// for local
+	// http.ListenAndServe(":8080", router.New(h))
 	appengine.Main()
 }
 

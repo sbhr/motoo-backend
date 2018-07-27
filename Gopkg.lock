@@ -57,7 +57,8 @@
     "internal/datastore",
     "internal/log",
     "internal/modules",
-    "internal/remote_api"
+    "internal/remote_api",
+    "log"
   ]
   revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
   version = "v1.1.0"
@@ -65,6 +66,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c5159137bcb785c07a4a3abddf6a6577c2eb82353c7073bebfe85df32edbac4b"
+  inputs-digest = "df045b6d5e84936e0fe0ba38f3a8af5f33dc65473960e3979a33f7ab6c8f0e8b"
   solver-name = "gps-cdcl"
   solver-version = 1
