@@ -14,12 +14,18 @@ type Conversation struct {
 	Response string `gorm:"type:varchar(2048)"`
 }
 
+// Game has information of games
+type Game struct {
+	ID   int    `gorm:"primary_key"`
+	Name string `gorm:"type:varchar(256)"`
+}
+
 // Playlog is game play log
 type Playlog struct {
-	ID        int    `gorm:"primary_key"`
-	UserID    string `gorm:"type:int"`
-	GameName  string `gorm:"unique;type:varchar(128)"`
-	StartTime int    `gorm:"type:int"`
-	EndTime   int    `gorm:"type:int"`
-	PlayTime  int    `gorm:"type:int"`
+	ID        int `gorm:"primary_key"`
+	UserID    int `gorm:"type:int"`
+	GameID    int `gorm:"type:int"`
+	StartTime int `gorm:"type:int"`
+	EndTime   int `gorm:"type:int"`
+	PlayTime  int `gorm:"type:int"`
 }
