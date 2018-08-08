@@ -30,6 +30,15 @@ type handler struct {
 	db motoodb.MotooDB
 }
 
+type postPlayLog struct {
+	UserID    string
+	UserName  string
+	GameName  string
+	StartTime int
+	EndTime   int
+	PlayTime  int
+}
+
 // New return Handler struct
 func New(m motoodb.MotooDB) Handler {
 	return handler{
@@ -176,7 +185,7 @@ func (h handler) PostUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.db.PostUser(u)
+	_, err = h.db.CreateAndGetUser(u)
 	if err != nil {
 		log.Errorf(ctx, "[ERROR] Failed to post user: ", err)
 		code := http.StatusInternalServerError
@@ -189,8 +198,8 @@ func (h handler) PostUser(w http.ResponseWriter, r *http.Request) {
 
 func (h handler) PostPlaylog(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
-	var p model.Playlog
-	err := json.NewDecoder(r.Body).Decode(&p)
+	var pp postPlayLog
+	err := json.NewDecoder(r.Body).Decode(&pp)
 	// Drain and close the body to let the Transport reuse the connection
 	io.Copy(ioutil.Discard, r.Body)
 	r.Body.Close()
@@ -201,6 +210,25 @@ func (h handler) PostPlaylog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get user_id and game_id.
+	// If they don't exist, insert them into DB and get ids of them.
+	u, err := h.db.CreateAndGetUser(model.User{UserID: pp.UserID, Name: pp.UserName})
+	if err != nil {
+		log.Errorf(ctx, "[ERROR] Failed to get or create user: ", err)
+		code := http.StatusInternalServerError
+		http.Error(w, err.Error(), code)
+		return
+	}
+	g, err := h.db.CreateAndGetGame(model.Game{Name: pp.GameName})
+	if err != nil {
+		log.Errorf(ctx, "[ERROR] Failed to get or create game: ", err)
+		code := http.StatusInternalServerError
+		http.Error(w, err.Error(), code)
+		return
+	}
+
+	// Insert Playlog
+	p := model.Playlog{UserID: u.ID, GameID: g.ID, StartTime: pp.StartTime, EndTime: pp.EndTime, PlayTime: pp.PlayTime}
 	err = h.db.PostPlaylog(p)
 	if err != nil {
 		log.Errorf(ctx, "[ERROR] Failed to post playlog: ", err)
